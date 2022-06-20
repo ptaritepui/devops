@@ -26,7 +26,7 @@ $ sudo chmod -R 777 /mnt/<DIRECTORY>
 5. Añadir al fichero **/etc/exports** todos los directorios que se desean compartir:
 
 ```
-$ sudo cat <<EOF > /etc/exporsts
+$ sudo cat <<EOF > /etc/exports
 <DIRECTORY>  <SUBNET_CIDR>(rw,sync,no_subtree_check)
 EOF
 ```

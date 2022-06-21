@@ -1,0 +1,6 @@
+FROM fedora:latest
+RUN dnf -y install nginx && dnf clean all
+COPY index.html /usr/share/nginx/html/
+COPY nginx.conf /etc/
+EXPOSE 8080
+CMD ["/usr/sbin/nginx","-c","/etc/nginx.conf"]

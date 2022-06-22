@@ -4,4 +4,3 @@ Los ejemplos que se encuentran disponibles en este directorio se basan en la uti
 
 * Podman 
 * Skopeo
-* Buildah 

@@ -15,7 +15,7 @@ $ kubectl get namespaces
 3. Se crean los recursos de la aplicación: 2 Deployments y 2 Servicios:
 
 ```
-$ kubectl create -f myapp.yaml
+$ kubectl create -f app.yaml
 ```
 
 4. Consultamos los recursos de tipo  deployments,pods,services

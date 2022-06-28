@@ -1,0 +1,23 @@
+# Playbook que almacena la salida del fichero /etc/fedora-release en una variable
+# Luego imprime la variable por pantalla y en un fichero de texto
+# comando de ejecucion
+# $ ansible-playbook -i inventory 02_playbook.yaml -K
+---
+- name: 'Almancenar version de sistema operativo'
+  hosts: all
+  remote_user: admin
+  become: true
+  tasks:
+    - name: 'Obtener version de sistema operativo'
+      shell: 'cat /etc/fedora-release'
+      register: os_version
+
+    - name: 'Imprimir valor de la variable por pantalla'
+      debug:
+        var: os_version.stdout
+
+    - name: 'Imprimir valor de la variable en un fichero de texto'
+      copy:
+        content: "{{ os_version.stdout }}\n"
+        dest: /tmp/os_version
+

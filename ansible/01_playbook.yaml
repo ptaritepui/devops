@@ -1,0 +1,15 @@
+# Playbook que modifica el fichero /etc/motd en los nodos gestionados a partir de una plantilla j2
+# comando de ejecucion
+# $ ansible-playbook -i inventory 01_playbook.yaml -K
+---
+- name: 'Modificar el /etc/motd'
+  hosts: all
+  remote_user: admin
+  become: true
+  vars_files:
+    - vars.yaml
+  tasks:
+    - name: 'Copiar plantilla de motd'
+      template:
+        src: templates/motd.j2
+        dest: /etc/motd

@@ -1,0 +1,20 @@
+# Playbook que instala las ultimas versiones de software disponibles
+# y posteriormente reinicia el nodo gestionado
+# $ ansible-playbook -i inventory 03_playbook.yaml -K
+---
+- name: 'Actualizacion de sistema operativo y posterior reinicio'
+  hosts: all
+  remote_user: admin
+  become: true
+  tasks:
+    - name: 'Actualizacion del sistema operativo'
+      yum:
+        name: '*'
+        state: latest
+      notify: Reiniciar el nodo
+
+  handlers:
+    - name: 'Reiniciar el nodo'
+      reboot:
+        pre_reboot_delay: 5
+        msg: 'Reinicio iniciado por Ansible'

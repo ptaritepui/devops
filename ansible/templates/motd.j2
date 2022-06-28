@@ -1,0 +1,5 @@
+{{ mensaje }} en el host {{ ansible_facts['hostname'] }} 
+que tiene los siguientes dispositivos de almacenamiento:
+{% for device in ansible_facts['devices'] %}
+{{ device }}
+{% endfor %}

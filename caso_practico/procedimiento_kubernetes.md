@@ -48,7 +48,7 @@ $ sudo dnf -y update
 
 ```
 $ timedatectl set-timezone Europe/Madrid
-$ sudo dnf -y install chronyd
+$ sudo dnf -y install chrony
 $ sudo systemctl enable chronyd --now
 ```
 
@@ -74,8 +74,8 @@ En todos los nodos de Kubernetes:
 
 ```
 $ sudo modprobe br_netfilter
-$ sudo firewalld-cmd --add-masquerade --permanent 
-$ sudo firewalld-cmd --reload
+$ sudo firewall-cmd --add-masquerade --permanent 
+$ sudo firewall-cmd --reload
 $ sudo cat <<EOF > /etc/sysctl.d/k8s.conf
 net.bridge.bridge-nf-call-ip6tables = 1
 net.bridge.bridge-nf-call-iptables = 1
@@ -122,10 +122,9 @@ $ sudo systemctl enable crio --now
 $ sudo cat <<EOF > /etc/yum.repos.d/kubernetes
 [kubernetes]
 name=Kubernetes
-baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-\$basearch
 enabled=1
 gpgcheck=1
-repo_gpgcheck=1
 gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
 exclude=kubelet kubeadm kubectl
 EOF
@@ -158,14 +157,13 @@ $ sudo systemctl enable kubelet --now
 |TCP| Entrante|10255|Statistics|
 
 ```
-$ sudo firewall-cmd --add-port={6443 2379-2380 10250-10252 10255}/tcp --permanent
-$ sudo firewall-cmd --reload
+$ for port in 6443 2379-2380 10250-10252 10255;do sudo firewall-cmd --add-port=${port}/tcp --permanent;sudo firewall-cmd --reload;done
 ```
 
 10. Permitir en el cortafuegos las conexiones desde cada nodo worker:
 
 ```
-$ sudo firewall-cmd --permanent add-rich-rule 'rule family=ipv4 source address=<IP_WORKER>/32 port port=6443 protocol tcp accept'
+$ sudo firewall-cmd --permanent --add-rich-rule 'rule family=ipv4 source address=<IP_WORKER>/32 port port=6443 protocol=tcp accept'
 $ sudo firewall-cmd --reload
 ```
 
@@ -314,7 +312,8 @@ $ kubectl apply -f custom-resources.yaml
 16.1 Permitir el tráfico en el cortafuegos del master y workers:
 
 ```
-$ sudo firewall-cmd --permanent --add-port={8285 8472}/udp
+$ sudo firewall-cmd --permanent --add-port=8285/udp
+$ sudo firewall-cmd --permanent --add-port=8472/udp
 $ sudo firewalld-cmd --reload
 ```
 
@@ -342,8 +341,10 @@ $ kubectl apply -f https://raw.githubusercontent.com/haproxytech/kubernetes-ingr
 18. Habilitar el tráfico entrante en el cortafuegos:
 
 ```
-$ sudo firewall-cmd --permanent --add-port={8285 8472}/udp
-$ sudo firewall-cmd --permanent --add-port={10250 30000-32767}/tcp
+$ sudo firewall-cmd --permanent --add-port=8285/udp
+$ sudo firewall-cmd --permanent --add-port=8472/udp
+$ sudo firewall-cmd --permanent --add-port=10250/tcp
+$ sudo firewall-cmd --permanent --add-port=30000-32767/tcp
 $ sudo firewalld-cmd --reload
 ```
 

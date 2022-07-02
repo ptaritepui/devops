@@ -3,7 +3,11 @@ Repositorio que incluye ejemplos prácticos de distintas tecnologías relacionad
 
 Se encuentran disponibles las siguientes secciones:
 
+* [Ansible](ansible/)
+
 * [Contenedores](contenedores/)
+
+* [Kubernetes](kubernetes/)
 
 * [Terraform](terraform/)
 

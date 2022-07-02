@@ -1,0 +1,6 @@
+---
+# tasks file for common
+- name: 'Actualizar rpms'
+  yum:
+    name: '*'
+    state: latest

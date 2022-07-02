@@ -1,0 +1,17 @@
+# Playbook que instala las ultimas versiones de software disponibles
+# y posteriormente reinicia el nodo gestionado
+# $ ansible-playbook -i inventory 03_playbook.yaml -K
+---
+- name: 'Actualizacion de sistema operativo e instalación de httpd'
+  hosts: all
+  remote_user: admin
+  become: true
+  tasks:
+    - name: 'Actualizacion del sistema operativo'
+      include_role:
+        name: common
+
+    - name: 'Instalar webserver'
+      include_role:
+        name: webserver
+      when: inventory_hostname in groups['webservers']

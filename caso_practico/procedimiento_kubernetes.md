@@ -31,10 +31,11 @@ $ sudo hostnamectl set-hostname nfs.example.com
 * Los nombres de máquina deben estar registrados en el DNS. En caso de no disponer de DNS, se deben definir en el fichero **/etc/hosts** de todos los servidores:
 
 ```
-$ sudo cat <<EOF >> /etc/hosts
+$ sudo bash -c 'cat <<EOF >> /etc/hosts
 10.0.0.2 nfs.example.com nfs
 10.0.0.3 master.example.com master
 10.0.0.4 worker.example.com worker
+EOF'
 ```
 
 
@@ -48,7 +49,7 @@ $ sudo dnf -y update
 
 ```
 $ timedatectl set-timezone Europe/Madrid
-$ sudo dnf -y install chronyd
+$ sudo dnf -y install chrony
 $ sudo systemctl enable chronyd --now
 ```
 
@@ -74,13 +75,13 @@ En todos los nodos de Kubernetes:
 
 ```
 $ sudo modprobe br_netfilter
-$ sudo firewalld-cmd --add-masquerade --permanent 
-$ sudo firewalld-cmd --reload
-$ sudo cat <<EOF > /etc/sysctl.d/k8s.conf
+$ sudo firewall-cmd --add-masquerade --permanent 
+$ sudo firewall-cmd --reload
+$ sudo bash -c 'cat <<EOF > /etc/sysctl.d/k8s.conf
 net.bridge.bridge-nf-call-ip6tables = 1
 net.bridge.bridge-nf-call-iptables = 1
 net.ipv4.ip_forward = 1
-EOF
+EOF'
 $ sudo sysctl --system 
 ```
 2. Desactivar la partición de swap:
@@ -104,10 +105,10 @@ Si desea instalar **cri-o** en otras distribuciones de Linux por favor consulte 
 4. Habilitar los módulos de kernel necesarios:
 
 ```
-$ sudo cat <<EOF > /etc/modules-load.d/crio.conf
+$ sudo bash -c 'cat <<EOF > /etc/modules-load.d/crio.conf
 overlay
 br_netfilter
-EOF
+EOF'
 ```
 
 5. Habilitar e iniciar el servicio de cri-o:
@@ -119,16 +120,15 @@ $ sudo systemctl enable crio --now
 6. Habilitar el repositorio de Kubernetes:
 
 ```
-$ sudo cat <<EOF > /etc/yum.repos.d/kubernetes
+$ sudo bash -c 'cat <<EOF > /etc/yum.repos.d/kubernetes.repo
 [kubernetes]
 name=Kubernetes
-baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-\$basearch
 enabled=1
 gpgcheck=1
-repo_gpgcheck=1
 gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
 exclude=kubelet kubeadm kubectl
-EOF
+EOF'
 ```
 
 7. Instalar kubernetes
@@ -165,7 +165,7 @@ $ sudo firewall-cmd --reload
 10. Permitir en el cortafuegos las conexiones desde cada nodo worker:
 
 ```
-$ sudo firewall-cmd --permanent add-rich-rule 'rule family=ipv4 source address=<IP_WORKER>/32 port port=6443 protocol tcp accept'
+$ sudo firewall-cmd --permanent --add-rich-rule 'rule family=ipv4 source address=<IP_WORKER>/32 port port=6443 protocol=tcp accept'
 $ sudo firewall-cmd --reload
 ```
 

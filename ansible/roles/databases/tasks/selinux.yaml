@@ -1,0 +1,31 @@
+---
+# tasks file for selinux
+- name: 'Habilitar SELinux en modo enforcing'
+  selinux:
+    policy: targeted
+    state: enforcing
+  notify: Reinicio
+
+- name: 'Instalar checkpolicy'
+  yum:
+    name: checkpolicy
+    state: latest
+
+- name: 'Establecer la politica de memoria en cgroup'
+  copy:
+    src: files/mongodb_cgroup_memory.te
+    dest: /tmp/mongodb_cgroup_memory.te
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: 'Validar politica de SELinux'
+  become: false
+  shell: "checkmodule -M -m -o /tmp/mongodb_cgroup_memory.mod /tmp/mongodb_cgroup_memory.te"
+
+- name: 'Compilar politica de SELinux'
+  become: false
+  shell: "semodule_package -o /tmp/mongodb_cgroup_memory.pp -m /tmp/mongodb_cgroup_memory.mod"
+
+- name: 
+  shell: "semodule -i /tmp/mongodb_cgroup_memory.pp"

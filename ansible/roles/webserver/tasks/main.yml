@@ -4,3 +4,16 @@
   yum:
     name: httpd
     state: latest
+
+- name: 'Permitir trafico web'
+  firewalld:
+    port: 80/tcp
+    permanent: yes
+    state: enabled
+    immediate: yes
+
+- name: 'Habilitar servicio httpd'
+  systemd:
+    name: httpd
+    state: started
+    enabled: yes

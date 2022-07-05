@@ -1,0 +1,45 @@
+---
+# tasks file for databases
+- name: 'Agregar repositorio de MongoDB'
+  copy:
+    src: files/mongodb.repo
+    dest: /etc/yum.repos.d/mongodb-org-5.0.repo
+    mode: '0644'
+    owner: root
+    group: root
+
+- name: 'Instalar mongodb-org'
+  yum:
+    name: mongodb-org
+    state: latest
+
+- name: 'Ampliar limite de ficheros abiertos en el sistema'
+  template:
+    src: templates/99-maxfiles.conf
+    dest: /etc/sysctl.d/
+    mode: '0644'
+    owner: root
+    group: root
+
+- name: 'Habilitar servicio mongodb en el cortafuegos'
+  firewalld:
+    service: mongodb
+    permanent: yes
+    state: enabled
+    immediate: yes
+
+- name: 'Configurar SELinux'
+  include_tasks: selinux.yaml
+  when: enforcing_selinux
+
+- name: 'Deshabilitar SELinux'
+  selinux:
+    state: disabled
+  when: not enforcing_selinux
+  notify: Reinicio
+
+- name: 'Iniciar servicio de mongodb'
+  systemd: 
+    name: mongod
+    state: started
+    enabled: yes

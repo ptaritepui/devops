@@ -4,14 +4,22 @@
 ---
 - name: 'Actualizacion de sistema operativo e instalación de httpd'
   hosts: all
-  remote_user: admin
+  remote_user: azureuser
   become: true
   tasks:
-    - name: 'Actualizacion del sistema operativo'
+    - name: 'Ejecucion de tareas comunes'
       include_role:
         name: common
+      tags: common
 
     - name: 'Instalar webserver'
       include_role:
         name: webserver
       when: inventory_hostname in groups['webservers']
+      tags: webservers
+
+    - name: 'Instalar databases'
+      include_role:
+        name: databases
+      when: inventory_hostname in groups['databases']
+      tags: databases

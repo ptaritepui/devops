@@ -1,6 +1,49 @@
 ---
 # tasks file for common
+- name: 'Establecer nombre de host'
+  hostname:
+    name: "{{ nombre_dominio }}"
+    use: systemd
+  tags: common
+
+- name: 'Establecer IP interna'
+  set_fact:
+    ip_interna: "{{ ansible_facts['default_ipv4']['address'] }}"
+  tags: common
+
+- debug:
+    var: ip_interna
+  tags: common
+
+
+- name: 'Generar fichero /etc/hosts'
+  template:
+    src: templates/hosts.j2
+    dest: /etc/hosts
+    owner: root
+    mode: '0644'
+  tags: common
+
+
 - name: 'Actualizar rpms'
   yum:
     name: '*'
     state: latest
+  notify: Reinicio
+  tags: common
+
+- name: 'Instalar rpms'
+  yum:
+    name: "{{ item }}"
+    state: latest
+  loop: "{{ rpms }}"
+  tags: common
+
+- name: 'Habilitar servicios necesarios'
+  systemd:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+  loop: "{{ servicios }}"
+
+  tags: common

@@ -1,0 +1,8 @@
+{% for webserver in groups['webservers'] %}
+  {{ hostvars[webserver].ip_interna }} {{ hostvars[webserver].nombre_dominio }}
+{% endfor %}
+
+{% for database in groups['databases'] %}
+  {{ hostvars[database].ip_interna }} {{ hostvars[database].nombre_dominio }}
+{% endfor %}
+

@@ -1,9 +1,5 @@
-host1.example.com
-
 [webservers]
-host2.example.com
-192.168.1.219
+20.117.93.40 nombre_dominio=webserver.example.com ip_interna=10.0.2.4
 
 [databases]
-host3.example.com
-host4.example.com
+20.108.182.108 nombre_dominio=database.example.com ip_interna=10.0.2.5

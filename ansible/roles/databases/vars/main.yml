@@ -1,0 +1,3 @@
+---
+# vars file for databases
+enforcing_selinux: true

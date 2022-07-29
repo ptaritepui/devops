@@ -12,3 +12,5 @@ Se encuentran disponibles las siguientes secciones:
 * [Terraform](terraform/)
 
 * [Caso Practico](caso_practico/)
+
+El contenido de este repositorio está bajo la [licencia](license) GNU General Public License v3.0.

@@ -1,0 +1,10 @@
+---
+- name: 'Caso Practico 2 - Despliegue de aplicacion sobre Kubernetes'
+  hosts: masters
+  remote_user: casopractico
+  become: False
+  tasks:
+    - name: 'Desplegar la aplicacion en k8s'
+      include_role:
+        name: k8s_app
+      tags: k8s

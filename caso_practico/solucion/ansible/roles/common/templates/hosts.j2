@@ -1,0 +1,7 @@
+{% for host in groups['masters'] %}
+  {{ hostvars[host].internal_ip }} {{ hostvars[host].domain_name }}
+{% endfor %}
+
+{% for host in groups['workers'] %}
+  {{ hostvars[host].internal_ip }} {{ hostvars[host].domain_name }}
+{% endfor %}

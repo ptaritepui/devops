@@ -1,0 +1,8 @@
+---
+# vars file for worker
+worker_fw_rules:
+  - 8285/udp
+  - 8472/udp
+  - 10250/tcp
+  - 30000-32767/tcp
+

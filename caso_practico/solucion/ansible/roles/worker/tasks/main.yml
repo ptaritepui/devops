@@ -1,0 +1,15 @@
+---
+# tasks file for worker
+- name: Habilitar reglas de cortafuegos
+  firewalld:
+    port: "{{ item }}"
+    permanent: yes
+    state: enabled
+    immediate: yes
+  loop: "{{ worker_fw_rules }}"
+  tags: worker
+
+- name: Unirse al cluster de Kubernetes
+  shell:  "{{ hostvars[groups['masters'][0]]['master_join_command'] }}"
+  when:  hostvars[groups['masters'][0]]['current_worker_command']  !=  hostvars[inventory_hostname].domain_name
+  tags: worker

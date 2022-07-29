@@ -1,0 +1,130 @@
+---
+# tasks file for common
+    - name: 'Establecer nombre de host'
+      hostname:
+        name: "{{ domain_name }}"
+        use: systemd
+   
+    - name: 'Generar fichero /etc/hosts'
+      template:
+        src: templates/hosts.j2
+        dest: /etc/hosts
+        owner: root
+        mode: '0644'
+
+    - name: 'Actualizar a ultima version'
+      yum:
+        name: '*'
+        state: latest
+
+    - name: 'Establecer zona horaria'
+      timezone:
+        name: Europe/Madrid
+
+    - name: 'Instalar servicio de hora y firewall'
+      yum:
+        name: "{{ rpms }}"
+        state: latest
+
+    - name: 'Habilitar e iniciar servicios'
+      systemd:
+        name: "{{ item }}"
+        enabled: yes
+        state: started
+      loop: "{{ servicios }}"
+
+    - name: 'Disabel SELinux'
+      selinux:
+        state: disabled
+      notify: Reiniciar nodo
+
+    - name: 'Habilitar modulos de kernel necesarios'
+      modprobe:
+        name: "{{ item }}"
+      loop: "{{ kernel_modules }}"
+      when: inventory_hostname in groups['kubernetes']
+
+    - name: Habilitar reglas de firewall
+      firewalld:
+        masquerade: yes
+        state: enabled
+        permanent: yes
+        immediate: yes
+      when: inventory_hostname in groups['kubernetes']
+
+    - name: Habilitar IP forwarding
+      sysctl:
+        name: "{{ item.name }}"
+        value: "{{ item.value }}"
+        sysctl_file: /etc/sysctl.d/k8s.conf
+        reload: yes
+      loop: "{{ kernel_params }}"
+      when: inventory_hostname in groups['kubernetes']
+
+    - name: 'Desactivar swapp'
+      block:
+        - name: 'Deshabilitar la swap'
+          command: swapoff -a
+
+        - name: 'Eliminar la partición swap del /etc/fstab'
+          mount:
+            name: swap
+            fstype: swap
+            state: absent
+      when: inventory_hostname in groups['kubernetes']
+
+    - name: Descargar repositorios de cri-o
+      get_url:
+        url: "{{ item.url }}"
+        dest: "{{ item.dest }}"
+        mode: '0644'
+        owner: root
+      loop: "{{ crio_repos }}"
+      when: inventory_hostname in groups['kubernetes']
+
+    - name: Instalar cri-o
+      yum:
+        name: cri-o
+        state: latest
+      when: inventory_hostname in groups['kubernetes']
+
+    - name: Habilitar el servicio de cri-o
+      systemd:
+        name: crio
+        state: started
+        enabled: yes
+      when: inventory_hostname in groups['kubernetes']
+
+    - name: Habilitar el repositorio de Kubernetes
+      template:
+        src: templates/kubernetes.repo.j2
+        dest: /etc/yum.repos.d/kubernetes.repo
+        mode: '0644'
+        owner: root
+      when: inventory_hostname in groups['kubernetes']
+
+    - name: Comprobar si Kubernetes ya esta instalado
+      package_facts:
+        manager: auto
+
+    - name: Instalar Kubernetes
+      yum:
+        name: "{{ k8s_rpms }}"
+        state: latest
+        disable_excludes: kubernetes
+      when: 
+        - "'kubelet' not in ansible_facts.packages"
+        - inventory_hostname in groups['kubernetes']
+      
+    - name: Habilitar el servicio de kubelet
+      systemd:
+        name: kubelet
+        state: started
+        enabled: yes
+      when: inventory_hostname in groups['kubernetes']
+
+    - name: Instalar cliente NFS
+      yum:
+        name: nfs-utils
+        state: latest
+      when: inventory_hostname in groups['kubernetes']

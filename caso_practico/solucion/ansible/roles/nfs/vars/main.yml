@@ -1,0 +1,13 @@
+---
+# vars file for nfs
+nfs_rpms: nfs-utils
+nfs_path: /mnt/nfs
+nfs_disk: /dev/sdc
+nfs_owner: nobody
+nfs_group: "{{ nfs_owner }}"
+nfs_service: nfs-server
+cluster_network: '10.0.2.0/24'
+fw_service_rules:
+  - nfs
+  - rpc-bind
+  - mountd

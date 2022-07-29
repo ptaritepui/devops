@@ -1,0 +1,12 @@
+[masters]
+20.254.32.149 domain_name=master.example.com internal_ip=10.0.2.6
+
+[workers]
+20.254.32.143 domain_name=worker01.example.com internal_ip=10.0.2.5
+
+[nfss]
+20.254.32.151 domain_name=nfs.example.com internal_ip=10.0.2.4
+
+[kubernetes:children]
+masters
+workers

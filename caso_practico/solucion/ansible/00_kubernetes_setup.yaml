@@ -1,0 +1,27 @@
+---
+- name: 'Caso Practico 2'
+  hosts: all
+  remote_user: casopractico
+  become: true
+  tasks:
+    - name: 'Preparar nodos'
+      include_role:
+        name: common
+
+    - name: 'Instalar el servidor NFS'
+      include_role:
+        name: nfs
+      when: inventory_hostname in groups['nfss']
+      tags: nfs
+
+    - name: 'Instalar el nodo Master'
+      include_role:
+        name: master
+      when: inventory_hostname in groups['masters']
+      tags: master
+
+    - name: 'Instalar el nodo Worker'
+      include_role:
+        name: worker
+      when: inventory_hostname in groups['workers']
+      tags: worker

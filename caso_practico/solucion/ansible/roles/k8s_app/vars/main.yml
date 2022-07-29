@@ -1,0 +1,17 @@
+---
+# vars file for k8s_app
+ruta_yamls: /tmp 
+nfs_path: /mnt/nfs
+nfs_server: nfs.example.com
+storageclass_name: nfs-server
+volume:
+  name: casopractico-nginx
+  capacity: 5Mi
+app:
+  name: app-casopractico-nginx
+  container_name: nginx
+  image: nginx
+  mount_path: "/usr/share/nginx/html"
+  port: 80
+  port_name: nginx
+  volume: volumen-casopractico-nginx

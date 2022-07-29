@@ -1,0 +1,65 @@
+---
+# tasks file for nfs
+- name: "Instalar rpms necesarios"
+  yum:
+    name: "{{ nfs_rpms }}"
+    state: latest
+  tags: nfs
+
+- name: "Crear directorios necesarios para el NFS"
+  file:
+    path: "{{ nfs_path }}"
+    owner: "{{ nfs_owner }}"
+    group: "{{ nfs_group }}"
+    mode: "0777"
+    recurse: yes
+    state: directory
+  tags: nfs
+
+- name: 'Establecer sistema de ficheros en el dispositivo de almacenamiento'
+  filesystem:
+    dev: "{{ nfs_disk }}"
+    fstype: ext4
+  tags: nfs
+
+- name: 'Montar dispositivo de almancenamiento'
+  mount:
+    path: "{{ nfs_path }}"
+    src:  "{{ nfs_disk }}"
+    fstype: ext4
+    state: mounted
+  tags: nfs
+
+- name: "Definir fichero exports"
+  template:
+    src: templates/exports.j2
+    dest: /etc/exports
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0644"
+  register: exports
+  tags: nfs
+  notify: Habilitar e iniciar servicio NFS
+
+- name: "Exportar sistema de ficheros"
+  shell: exportfs -arv
+  when: exports.changed
+  tags: nfs
+
+- name: "Comprobar exportación de sistema de ficheros"
+  shell: exportfs -s 
+  register: nfs_check
+  tags: nfs
+
+- debug:
+    var: nfs_check.stdout
+  tags: nfs
+
+- name: "Definir reglas de cortafuegos para el servicio NFS"
+  firewalld:
+    service: "{{ item }}"
+    state: enabled
+    permanent: yes
+    immediate: yes
+  tags: nfs
+  loop: "{{ fw_service_rules }}"

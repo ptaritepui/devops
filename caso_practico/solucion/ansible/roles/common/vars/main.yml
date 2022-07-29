@@ -1,0 +1,35 @@
+---
+# vars file for common
+rpms:
+  - chrony
+  - firewalld
+servicios:
+  - chronyd
+  - firewalld
+
+kernel_params:
+  - name: net.bridge.bridge-nf-call-ip6tables
+    value: 1
+
+  - name: net.bridge.bridge-nf-call-iptables
+    value: 1
+
+  - name: net.ipv4.ip_forward
+    value: 1
+
+kernel_modules:
+  - br_netfilter 
+  - overlay 
+    
+k8s_version: 1.24
+os: "CentOS_8_Stream"
+crio_repos:
+  - url: "https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/{{ os }}/devel:kubic:libcontainers:stable.repo"
+    dest: "/etc/yum.repos.d/devel:kubic:libcontainers:stable.repo"
+  - url: "https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable:cri-o:{{ k8s_version }}/{{ os }}/devel:kubic:libcontainers:stable:cri-o:{{ k8s_version }}.repo"
+    dest: "/etc/yum.repos.d/devel:kubic:libcontainers:stable:cri-o:{{ k8s_version }}.repo"
+
+k8s_rpms:
+  - kubelet
+  - kubeadm
+  - kubectl

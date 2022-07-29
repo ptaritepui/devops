@@ -1,0 +1,7 @@
+---
+# handlers file for nfs
+- name: "Habilitar e iniciar servicio NFS"
+  systemd:
+    name: "{{ nfs_service }}"
+    enabled: yes
+    state: started

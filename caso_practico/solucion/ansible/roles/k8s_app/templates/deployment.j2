@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-casopractico
+  labels:
+    app: mongodb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb
+  template:
+    metadata:
+      labels:
+        app: mongodb
+    spec:
+      containers:
+      - name: mongodb
+        image: docker.io/mongo
+        ports:
+          - name: mongodb
+            containerPort: 27001
+        volumeMounts:
+            - name: volume-mongodb
+              mountPath: "/var/lib/mongodb/"
+      volumes:
+      - name: volume-mongodb
+        persistentVolumeClaim:
+          claimName: pvc-casopractico

@@ -1,0 +1,5 @@
+---
+# handlers file for k8s_app
+- name: Crear storageclass
+  become: false
+  shell: kubectl create -f "{{ ruta_yamls }}/nfs-storageclass.yaml"

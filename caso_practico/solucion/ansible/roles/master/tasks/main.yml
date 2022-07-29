@@ -1,0 +1,93 @@
+---
+# tasks file for master
+- name: Habilitar reglas de cortafuegos
+  firewalld:
+    port: "{{ item }}"
+    permanent: yes
+    state: enabled
+    immediate: yes
+  tags: master
+  loop: "{{ master_fw_rules }}"
+
+- name: Habilitar comunicacion con los workers
+  firewalld:
+    rich_rule: "rule family=ipv4 source address={{ hostvars[inventory_hostname].internal_ip }}/32 port port=6443 protocol=tcp accept"
+    permanent: yes
+    state: enabled
+    immediate: yes
+  tags: master
+  when: hostvars[inventory_hostname].internal_ip is defined 
+    
+- name: Configurar kubeadm
+  command: kubeadm config images pull
+  tags: master
+
+- name: 'Verificar estado de API'
+  wait_for:
+    port: 6443
+    timeout: 5
+  ignore_errors: True
+  register: api
+  tags: master
+
+- debug:
+    var: api
+
+- name: Instalar plugin CNI
+  command: "kubeadm init --pod-network-cidr={{ pod_network_cidr }}"
+  when: api.failed
+  tags: master
+
+- name: Obtener kubeconfig
+  fetch:
+    src: /etc/kubernetes/admin.conf
+    dest: /tmp/
+    flat: yes
+  tags: master
+
+- name: Create .kube directory
+  file:
+    path: "/home/{{ ansible_user }}/.kube"
+    owner: "{{ ansible_user }}"
+    mode: '0755'
+    state: directory
+  tags: master
+
+- name: Copy kubeconfig to .kube directory
+  copy:
+    src: "/etc/kubernetes/admin.conf"
+    dest: "/home/{{ ansible_user }}/.kube/config"
+    remote_src: yes
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0644'
+  tags: master
+
+- name: Obtener parametros de join
+  shell: kubeadm token create --print-join-command
+  register: join_command
+  tags: master
+
+- name: Obtener workers del cluster
+  become: false
+  shell: "kubectl get nodes -l kubernetes.io/hostname=worker01.example.com --no-headers=True | cut -d' ' -f1"
+  register: current_worker
+  tags: master
+
+- set_fact:
+    master_join_command: "{{ join_command.stdout }}"
+  tags: master
+
+- set_fact:
+    current_worker_command: "{{ current_worker.stdout }}"
+  tags: master
+
+- name: Aplicar network policies
+  become: false
+  shell: "kubectl apply -f https://docs.projectcalico.org/manifests/canal.yaml"
+  tags: calico, master
+
+- name: Instalar ingress controller
+  become: false
+  shell: "kubectl apply -f https://raw.githubusercontent.com/haproxytech/kubernetes-ingress/master/deploy/haproxy-ingress.yaml"
+  tags: master

@@ -1,0 +1,61 @@
+---
+# tasks file for k8s_app
+- name: 'Añadir storage class NFS'
+  become: false
+  template:
+    src: templates/nfs-storageclass.j2
+    dest: "{{ ruta_yamls }}/nfs-storageclass.yaml"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0644"
+  register: nfsstorageclass
+  tags: k8s
+
+- name: Crear storageclass
+  become: false
+  shell: kubectl create -f "{{ ruta_yamls }}/nfs-storageclass.yaml"
+  when: nfsstorageclass.changed
+
+- name: 'Consultar Storageclasses del cluster'
+  become: false
+  shell: kubectl get sc 
+  register: sc 
+  tags: k8s
+
+- debug:
+    var: sc.stdout_lines
+  tags: k8s
+
+- name: 'Añadir definicion de persistent volume claim y persistent volume'
+  become: false
+  template:
+    src: templates/persistent_volume.j2
+    dest: "{{ ruta_yamls }}/volume.yaml"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0644"
+  register: persistent_volume
+  tags: k8s
+
+- name: 'Crear persistent volume claim'
+  become: false
+  shell: kubectl create -f "{{ ruta_yamls }}/volume.yaml"
+  when: persistent_volume.changed
+  tags: k8s
+
+- name: 'Añadir template de aplicacion persistente'
+  become: false
+  template:
+    src: templates/app.j2
+    dest: "{{ ruta_yamls }}/app.yaml"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0644"
+  register: app
+  tags: k8s
+
+- name: 'Crear aplicacion persistente'
+  become: false
+  shell: kubectl create -f "{{ ruta_yamls }}/app.yaml"
+  when: app.changed
+  tags: k8s

@@ -9,10 +9,6 @@ Este repositorio incluye información relacionada con el caso práctico
 
 ## Material de apoyo
 
-* Ejemplos de Terraform
+* [Ejemplos de Terraform](../terraform)
 
-* Ejemplos de Ansible
-
-* [Procedimiento](procedimiento_servidor_nfs.md) de instalación NFS.
-
-* [Procedimiento](procedimiento_kubernetes.md) de instalación Kubernetes
+* [Ejemplos de Ansible](../ansible)

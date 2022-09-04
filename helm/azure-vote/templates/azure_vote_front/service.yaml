@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "azure-vote.azure_vote_front.fullname" . }}
+  labels:
+    {{- include "azure-vote.azure_vote_front.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.azure_vote_front.service.type }}
+  ports:
+    - port: {{ .Values.azure_vote_front.service.port }}
+  selector:
+    {{- include "azure-vote.azure_vote_front.matchLabels" . | nindent 4 }}

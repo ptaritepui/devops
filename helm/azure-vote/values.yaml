@@ -1,0 +1,52 @@
+# Default values for azure-vote.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+azure_vote_front:
+  fullnameOverride: azure-vote-front
+  name: azure-vote-front
+  replicaCount: 1
+  podAnnotations: {}
+  nodeSelector:
+    kubernetes.io/os: linux
+  image:
+    repository:  mcr.microsoft.com/azuredocs/azure-vote-front
+    pullPolicy: IfNotPresent
+    tag: v1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 250m
+      memory: 256Mi
+  port: 80
+  extraEnv:
+    REDIS: "azure-vote-back"
+  service:
+    type: LoadBalancer
+    port: 80
+
+azure_vote_back:
+  fullnameOverride: azure-vote-back
+  name: azure-vote-back
+  replicaCount: 1
+  podAnnotations: {}
+  nodeSelector:
+    kubernetes.io/os: linux
+  image:
+    repository: mcr.microsoft.com/oss/bitnami/redis
+    pullPolicy: IfNotPresent
+    tag: 6.0.8
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 250m
+      memory: 256Mi
+  port: 6379
+  extraEnv:
+    ALLOW_EMPTY_PASSWORD: '"yes"'
+  service:
+    port: 6379

@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "azure-vote.azure_vote_front.fullname" . }}
+  labels:
+    {{- include "azure-vote.azure_vote_front.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.azure_vote_front.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "azure-vote.azure_vote_front.matchLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.azure_vote_front.podAnnotations }}
+      annotations:
+        {{- toYaml .Values.azure_vote_front.podAnnotations | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "azure-vote.azure_vote_front.labels" . | nindent 8 }}
+        {{- if .Values.azure_vote_front.podLabels}}
+        {{ toYaml .Values.azure_vote_front.podLabels | nindent 8 }}
+        {{- end}}
+    spec:
+      containers:
+        - name: {{ template "azure-vote.name" . }}-{{ .Values.azure_vote_front.name }}
+          image: "{{ .Values.azure_vote_front.image.repository }}:{{ .Values.azure_vote_front.image.tag }}"
+          imagePullPolicy: {{ .Values.azure_vote_front.image.pullPolicy }}
+          env:
+            {{- range $key, $value := .Values.azure_vote_front.extraEnv }}
+            - name: {{ $key }}
+              value: {{ $value }}
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.azure_vote_front.port }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.azure_vote_front.resources | nindent 12 }}
+      {{- if .Values.azure_vote_front.nodeSelector }}
+      nodeSelector:
+        {{ toYaml .Values.azure_vote_front.nodeSelector | indent 8 }}
+      {{- end }}

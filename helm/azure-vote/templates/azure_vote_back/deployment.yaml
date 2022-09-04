@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "azure-vote.azure_vote_back.fullname" . }}
+  labels:
+    {{- include "azure-vote.azure_vote_back.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.azure_vote_back.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "azure-vote.azure_vote_back.matchLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.azure_vote_back.podAnnotations }}
+      annotations:
+        {{- toYaml .Values.azure_vote_back.podAnnotations | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "azure-vote.azure_vote_back.labels" . | nindent 8 }}
+        {{- if .Values.azure_vote_back.podLabels}}
+        {{ toYaml .Values.azure_vote_back.podLabels | nindent 8 }}
+        {{- end}}
+    spec:
+      containers:
+        - name: {{ template "azure-vote.name" . }}-{{ .Values.azure_vote_back.name }}
+          image: "{{ .Values.azure_vote_back.image.repository }}:{{ .Values.azure_vote_back.image.tag }}"
+          imagePullPolicy: {{ .Values.azure_vote_back.image.pullPolicy }}
+          env:
+            {{- range $key, $value := .Values.azure_vote_back.extraEnv }}
+            - name: {{ $key }}
+              value: {{ $value }}
+            {{- end }}
+          ports:
+            - name: redis
+              containerPort: {{ .Values.azure_vote_back.port }}
+          resources:
+            {{- toYaml .Values.azure_vote_back.resources | nindent 12 }}
+      {{- if .Values.azure_vote_back.nodeSelector }}
+      nodeSelector:
+        {{ toYaml .Values.azure_vote_back.nodeSelector | indent 8 }}
+      {{- end }}

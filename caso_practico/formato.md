@@ -38,7 +38,6 @@ variable "public_key_path" {
   description = "Ruta para la clave pública de acceso a las instancias"
   default = "~/.ssh/id_rsa.pub" # o la ruta correspondiente
 }
-a
 
 variable "ssh_user" {
   type = string

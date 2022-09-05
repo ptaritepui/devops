@@ -1,0 +1,23 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: clonebuildpush-run
+spec:
+  pipelineRef:
+    name: clonebuildpush
+  workspaces:
+  - name: shared-data
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+  params:
+  - name: repo-url
+    value: https://github.com/ptaritepui/azure-voting-app.git
+  - name: image-reference
+    value: 10.0.2.4:5000/app:v1
+  - name: build-context
+    value: azure-vote/

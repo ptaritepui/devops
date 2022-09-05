@@ -9,6 +9,10 @@ Se encuentran disponibles las siguientes secciones:
 
 * [Kubernetes](kubernetes/)
 
+* [Helm](helm/)
+
+* [Tekton](tekton/)
+
 * [Terraform](terraform/)
 
 * [Caso Practico](caso_practico/)

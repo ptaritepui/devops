@@ -1,0 +1,43 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: clonebuildpush
+spec:
+  description: |
+    This pipeline clones a git repo, then echoes the README file to the stout.
+  params:
+  - name: repo-url
+    type: string
+    description: The git repo URL to clone from.
+  - name: image-reference
+    type: string
+    description: To add the tag corresponding the container registry where the image is going to be pushed.
+  - name: build-context
+    type: string
+  workspaces:
+  - name: shared-data
+    description: |
+      This workspace contains the cloned repo files, so they can be read by the
+      next task.
+  tasks:
+  - name: fetch-source
+    taskRef:
+      name: git-clone
+    workspaces:
+    - name: output
+      workspace: shared-data
+    params:
+    - name: url
+      value: $(params.repo-url)
+  - name: build-push
+    runAfter: ["fetch-source"]
+    taskRef:
+      name: kaniko
+    workspaces:
+    - name: source
+      workspace: shared-data
+    params:
+    - name: IMAGE
+      value: $(params.image-reference)
+    - name: CONTEXT
+      value: $(params.build-context)

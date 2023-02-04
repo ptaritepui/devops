@@ -5,7 +5,7 @@ Se encuentran disponibles las siguientes secciones:
 
 * [Ansible](ansible/)
 
-* [AZure](azure/)
+* [Azure](azure/)
 
 * [Contenedores](contenedores/)
 

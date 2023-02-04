@@ -286,6 +286,9 @@ do
   --resource-group ${GROUP} \
   --lb-name lb1
 done
+```
+
+### Prueba de conectividad al servidor Web
 
 17. Establecer la conexión a la IP pública del balanceador de carga y comprobar que se muestra la Web por defecto del servidor Apache.
 

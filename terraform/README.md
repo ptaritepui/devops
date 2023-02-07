@@ -15,7 +15,7 @@ Este directorio incluye ejemplo básicos de despliegue de infraestructura como c
 
 * [Crear una máquina virtual con sistema operativo Ubuntu](ejemplos/azurerm/vm_ubuntu)
 * [Crear una máquina virtual basada en CentOS Stream desde el marketplace de Azure](ejemplos/azurerm/vm_centos_stream)
-* [Crear una máquina virtual con dos discos: arranque + datos](ejemplos/azurerm/multiple_discos)
+* [Crear una máquina virtual con dos discos: arranque + datos](ejemplos/azurerm/multiples_discos)
 * [Crear un balanceador de carga hacia múltiples servidores web](ejemplos/azurerm/balanceador)
 
 

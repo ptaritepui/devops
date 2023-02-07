@@ -1,5 +1,7 @@
 # Procedimiento para desplegar un balanceador de carga:
 
+El siguiente ejemplo crea a través de Terraform la infraestructura necesaria para disponer de un balanceador de carga hacia múltiples servidores web:
+
 1. Instalar el proveedor de Terraform para Azure:
 `terraform init`
 2. Desplegar las máquinas virtuales y el balanceador de carga:

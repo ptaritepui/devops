@@ -10,6 +10,7 @@ Requisitos:
 Ejemplos de creación de recursos:
 
 * [Creación de una máquina virtual](./vm.md) (vm).
+* [Creación de un balanceador de carga hacia múltiples servidores Web](./loadbalancer.md) (loadbalancer)
 * [Creación de una instancia de Azure Container Registry](./acr.md) (ACR).
 * [Creación de un cluster de Kubernetes gestionado por Azure](./aks.md) (AKS).
 

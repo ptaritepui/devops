@@ -13,4 +13,4 @@ Este repositorio incluye información relacionada con el caso práctico
 
 * [Ejemplos de Ansible](../ansible)
 
-* [Servidor Web contenerizado](/web_app)
+* [Servidor Web contenerizado](./web_app)

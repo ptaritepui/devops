@@ -12,3 +12,5 @@ Este repositorio incluye información relacionada con el caso práctico
 * [Ejemplos de Terraform](../terraform)
 
 * [Ejemplos de Ansible](../ansible)
+
+* [Servidor Web contenerizado](web_app.md)

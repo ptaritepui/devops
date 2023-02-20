@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ aplicacion.backend.nombre }}"
+  namespace: "{{ k8s_namespace }}"
+spec:
+  replicas: {{ aplicacion.backend.replicas }}
+  selector:
+    matchLabels:
+      app: "{{ aplicacion.backend.nombre }}"
+  template:
+    metadata:
+      labels:
+        app: "{{ aplicacion.backend.nombre }}"
+    spec:
+      nodeSelector:
+        "kubernetes.io/os": linux
+      containers:
+      - name: "{{ aplicacion.backend.nombre }}"
+        image: "{{ aplicacion.backend.imagen }}"
+        env:
+        - name: ALLOW_EMPTY_PASSWORD
+          value: "yes"
+        resources:
+          requests:
+            cpu: "{{ aplicacion.backend.recursos.cpu }}"
+            memory: "{{ aplicacion.backend.recursos.memoria }}"
+          limits:
+            cpu: "{{ aplicacion.backend.limites.cpu }}"
+            memory: "{{ aplicacion.backend.limites.memoria }}"
+        ports:
+        - containerPort: {{ aplicacion.backend.puerto }}
+          name: redis
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: "{{ aplicacion.backend.nombre }}"
+  namespace: "{{ k8s_namespace }}"
+spec:
+  ports:
+  - port: {{ aplicacion.backend.puerto }}
+  selector:
+    app: "{{ aplicacion.backend.nombre }}"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ aplicacion.frontend.nombre }}"
+  namespace: "{{ k8s_namespace }}"
+spec:
+  replicas: {{ aplicacion.frontend.replicas }}
+  selector:
+    matchLabels:
+      app: "{{ aplicacion.frontend.nombre }}"
+  template:
+    metadata:
+      labels:
+        app: "{{ aplicacion.frontend.nombre }}"
+    spec:
+      nodeSelector:
+        "kubernetes.io/os": linux
+      containers:
+      - name: "{{ aplicacion.frontend.nombre }}"
+        image: "{{ aplicacion.frontend.imagen }}"
+        resources:
+          requests:
+            cpu: "{{ aplicacion.frontend.recursos.cpu }}"
+            memory: "{{ aplicacion.frontend.recursos.memoria }}"
+          limits:
+            cpu: "{{ aplicacion.frontend.limites.cpu }}"
+            memory: "{{ aplicacion.frontend.limites.memoria }}"
+        ports:
+        - containerPort: {{ aplicacion.frontend.puerto }}
+        env:
+        - name: REDIS
+          value: "{{ aplicacion.backend.nombre }}"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: "{{ aplicacion.frontend.nombre }}"
+  namespace: "{{ k8s_namespace }}"
+spec:
+  type: LoadBalancer
+  ports:
+  - port: {{ aplicacion.frontend.puerto }}
+  selector:
+    app: "{{ aplicacion.frontend.nombre }}"

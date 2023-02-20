@@ -1,0 +1,26 @@
+k8s_namespace: "ejemplo-05"
+directorio_trabajo: "/tmp"
+aplicacion:
+  definicion: "stateless.yaml"
+  backend:
+    nombre: app-back 
+    imagen: mcr.microsoft.com/oss/bitnami/redis:6.0.8
+    replicas: 1
+    recursos:
+      cpu: 100m
+      memoria: 128Mi
+    limites:
+      cpu: 250m
+      memoria: 256Mi
+    puerto: 6379
+  frontend:
+    nombre: app-front
+    imagen: mcr.microsoft.com/azuredocs/azure-vote-front:v1
+    replicas: 1
+    recursos:
+      cpu: 100m
+      memoria: 128Mi
+    limites:
+      cpu: 250m
+      memoria: 256Mi
+    puerto: 80

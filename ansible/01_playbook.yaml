@@ -7,7 +7,7 @@
   remote_user: admin
   become: true
   vars_files:
-    - vars.yaml
+    - vars/01_vars.yaml
   tasks:
     - name: 'Copiar plantilla de motd'
       template:

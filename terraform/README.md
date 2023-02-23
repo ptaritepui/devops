@@ -39,4 +39,4 @@ El siguiente [enlace](https://registry.terraform.io/providers/hashicorp/azurerm/
 
 * [Azure Container Registry](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/container_registry)
 
-* [Azure Kubernetes Cluster (AKS)])(https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/kubernetes_cluster)
+* [Azure Kubernetes Cluster (AKS)](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/kubernetes_cluster)

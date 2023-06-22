@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: persistent-storage
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: persistent-storage
+  template:
+    metadata:
+      labels:
+        app: persistent-storage
+    spec:
+      nodeSelector:
+        "kubernetes.io/os": linux
+      volumes:
+        - name: example-pv-storage
+          persistentVolumeClaim:
+            claimName: pvc-managed-csi
+      containers:
+      - name: persistent-storage
+        image: nginx
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 250m
+            memory: 256Mi
+        ports:
+        - containerPort: 80
+          name: "http-server"
+        volumeMounts:
+          - mountPath: "/usr/share/nginx/html"
+            name: example-pv-storage
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: persistent-storage
+  namespace: default
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+  selector:
+    app: persistent-storage
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-managed-csi
+spec:
+  storageClassName: managed-csi
+  resources:
+    requests:
+      storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
